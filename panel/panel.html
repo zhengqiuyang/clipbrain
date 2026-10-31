@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'" />
+  <title>clipbrain</title>
+  <link rel="stylesheet" href="panel.css" />
+</head>
+<body>
+  <div class="panel">
+    <header class="topbar">
+      <div class="brand">clip<span>brain</span></div>
+      <div class="hint" id="hint">↑↓ 选择 · Enter 复制 · Esc 隐藏</div>
+    </header>
+    <div class="searchwrap">
+      <input id="search" type="text" placeholder="搜索你复制过的一切…"
+             autocomplete="off" spellcheck="false" autofocus />
+      <span class="badge" id="mode" title="检索模式">词法</span>
+    </div>
+    <main id="list" tabindex="-1"></main>
+    <footer class="statusbar">
+      <span id="count">0 条</span>
+      <span id="footnote">本地存储 · 数据不离开这台机器</span>
+    </footer>
+  </div>
+  <script src="panel.js"></script>
+</body>
+</html>

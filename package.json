@@ -1,0 +1,23 @@
+{
+  "name": "clipbrain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI 剪贴板大脑 — 全局快捷键唤起，语义检索你复制过的一切。本地优先，零原生模块，embedding 可选（Ollama），词汇检索兜底。",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron . --smoke",
+    "test": "node --test",
+    "smoke:pipeline": "node scripts/smoke.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  },
+  "license": "MIT",
+  "allowScripts": {
+    "electron@33.4.11": true
+  }
+}
