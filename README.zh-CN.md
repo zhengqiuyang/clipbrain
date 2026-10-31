@@ -1,3 +1,5 @@
+<div align="center">
+
 # clipbrain
 
 **AI 剪贴板大脑 — 你复制过的一切，语义可搜。**
@@ -6,16 +8,19 @@
 
 > 全局快捷键唤起 · 本地 embedding（可选）· 零原生模块 · 数据不出机
 
-[![CI](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml/badge.svg)](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml)
-[![License: MIT](https://github.com/zhengqiuyang/clipbrain/blob/main/LICENSE)](LICENSE)
-![Node](https://img.shields.io/badge/Node-18%2B-green)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+[![CI](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+![Node](https://img.shields.io/badge/Node-18%2B-green?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)
 
----
+[快速开始](#quick-start) · [工作原理](#how-it-works) · [诚实声明](#honesty) · [验证](#verification) · [路线图](#roadmap)
+
+</div>
 
 ## 你每天复制几百次，然后全忘了
 
-一条 SSH 命令、一段报错、一个链接、一串验证码、一段写了一半的话——复制的那一刻你笃定自己记得，三天后它沉进了无底的剪贴板。
+一条 SSH 命令、一段报错、一个链接、一串验证码、一段写了一半的话——
+复制的那一刻你笃定自己记得，三天后它沉进了无底的剪贴板。
 
 clipbrain 接住这一切。按 `Alt+Shift+V`，一个暗色面板从屏幕上方落下：
 
@@ -35,6 +40,7 @@ clipbrain 接住这一切。按 `Alt+Shift+V`，一个暗色面板从屏幕上�
 - **键盘流**：↑↓ 选择，Enter 复制并收起，Esc 隐藏，Ctrl+P 置顶，Ctrl+D 删除
 - **本地优先**：历史存在 userData 的两个 JSON 文件里，无网络上报；剪贴板是机器上最敏感的地方，它哪儿也不去
 
+<a id="quick-start"></a>
 ## 快速开始
 
 ```bash
@@ -53,6 +59,7 @@ ollama pull nomic-embed-text
 # 重启 clipbrain，面板徽章从「词法」变「语义」
 ```
 
+<a id="how-it-works"></a>
 ## 工作原理
 
 ```text
@@ -66,15 +73,19 @@ ollama pull nomic-embed-text
                               └ 没有它？纯词法，一样能用
 ```
 
-设计立场：**embedding 是增强，不是依赖**。Ollama 不可用时捕获、检索、置顶、删除全部照常，只是徽章从「语义」变回「词法」。
+设计立场：**embedding 是增强，不是依赖**。Ollama 不可用时捕获、检索、
+置顶、删除全部照常，只是徽章从「语义」变回「词法」。
 
+<a id="honesty"></a>
 ## 诚实声明
 
 - **v1 只捕获文本**。图片/文件剪贴板在路线图上。
-- **历史无加密**。存储在你本机 userData，进程级保护即操作系统用户边界；如需磁盘加密请配合 BitLocker/FileVault。敏感窗口黑名单在路线图上。
+- **历史无加密**。存储在你本机 userData，进程级保护即操作系统用户边界；
+  如需磁盘加密请配合 BitLocker/FileVault。敏感窗口黑名单在路线图上。
 - **检索确定性**：同样的库、同样的查询，永远同一个排序——有测试锁着。
 - **无遥测、无网络上报**。唯一的网络调用是向本机 Ollama（如果你开了）。
 
+<a id="verification"></a>
 ## 验证
 
 每条承诺都有自动化验证（`node --test`，24 用例）：
@@ -93,6 +104,7 @@ ollama pull nomic-embed-text
 
 CI：ubuntu / windows / macOS × Node 20 / 22。
 
+<a id="configuration"></a>
 ## 配置
 
 `userData/settings.json`（不存在则用默认值）：
@@ -105,6 +117,7 @@ CI：ubuntu / windows / macOS × Node 20 / 22。
 }
 ```
 
+<a id="roadmap"></a>
 ## 路线图
 
 - [ ] 图片/文件剪贴板（缩略图 + 视觉 embedding）
@@ -112,6 +125,7 @@ CI：ubuntu / windows / macOS × Node 20 / 22。
 - [ ] 置顶管理视图与标签
 - [ ] 打包发布（nsis/dmg/AppImage）
 
+<a id="principles"></a>
 ## 设计原则
 
 1. **embedding 是增强不是依赖** — 没有 Ollama 一样是一台好用的剪贴板机器。

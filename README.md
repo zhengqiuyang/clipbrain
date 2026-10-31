@@ -1,41 +1,47 @@
+<div align="center">
+
 # clipbrain
 
-**AI 剪贴板大脑 — 你复制过的一切，语义可搜。**
+**AI clipboard brain — everything you've ever copied, searchable by meaning.**
 
-English | [简体中文](README.zh-CN.md)
+[简体中文](README.zh-CN.md) | English
 
-> 全局快捷键唤起 · 本地 embedding（可选）· 零原生模块 · 数据不出机
+> Global hotkey · local embeddings (optional) · zero native modules · data never leaves your machine
 
-[![CI](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml/badge.svg)](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml)
-[![License: MIT](https://github.com/zhengqiuyang/clipbrain/blob/main/LICENSE)](LICENSE)
-![Node](https://img.shields.io/badge/Node-18%2B-green)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+[![CI](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/zhengqiuyang/clipbrain/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+![Node](https://img.shields.io/badge/Node-18%2B-green?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)
 
----
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Honesty](#honesty) · [Verification](#verification) · [Roadmap](#roadmap)
 
-## 你每天复制几百次，然后全忘了
+</div>
 
-一条 SSH 命令、一段报错、一个链接、一串验证码、一段写了一半的话——
-复制的那一刻你笃定自己记得，三天后它沉进了无底的剪贴板。
+## You copy hundreds of times a day, then forget it all
 
-clipbrain 接住这一切。按 `Alt+Shift+V`，一个暗色面板从屏幕上方落下：
+An SSH command, an error message, a link, an OTP, half a sentence you were writing —
+the moment you copy it you're sure you'll remember it; three days later it has sunk
+into the bottomless clipboard.
+
+clipbrain catches all of it. Press `Alt+Shift+V` and a dark panel drops down from the top of the screen:
 
 ```text
-┌─ clip brain ─────────────────────── ↑↓ 选择 · Enter 复制 ─┐
-│ 搜索你复制过的一切…                              [语义]  │
-├──────────────────────────────────────────────────────────┤
-│ 命令 │ git rebase -i HEAD~3                    3 分钟前  │
-│ 链接 │ https://github.com/zhengqiuyang         1 小时前  │
-│ 代码 │ const brain = require('./brain')        2 小时前  │
-│ 文本 │ 上下文窗口是模型一次能读到的全部内容     昨天      │
-└──────────────────────────────────────────────────────────┘
+┌─ clip brain ─────────────────────── ↑↓ select · Enter copy ─┐
+│ Search everything you've copied…                  [semantic] │
+├──────────────────────────────────────────────────────────────┤
+│ cmd  │ git rebase -i HEAD~3                     3 min ago    │
+│ link │ https://github.com/zhengqiuyang          1 hour ago   │
+│ code │ const brain = require('./brain')         2 hours ago  │
+│ text │ a context window is what a model reads   yesterday    │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-- **七类内容自动分类**：命令 / 链接 / 代码 / JSON / 颜色 / 数字码 / 文本，徽章着色
-- **语义检索**：装了 [Ollama](https://ollama.com) 自动升级——"那个关于重试的命令"也能搜到；没装则是干净的词法检索，面板右上角徽章实时告诉你当前模式
-- **键盘流**：↑↓ 选择，Enter 复制并收起，Esc 隐藏，Ctrl+P 置顶，Ctrl+D 删除
-- **本地优先**：历史存在 userData 的两个 JSON 文件里，无网络上报；剪贴板是机器上最敏感的地方，它哪儿也不去
+- **Seven content types, auto-classified** — command / link / code / JSON / color / OTP / text, with color-coded badges
+- **Semantic search** — with [Ollama](https://ollama.com) installed it upgrades automatically: "that command about retries" becomes findable. Without it you get clean lexical search, and the badge in the panel's top-right corner always tells you which mode you're in
+- **Keyboard-first** — ↑↓ to select, Enter to copy and dismiss, Esc to hide, Ctrl+P to pin, Ctrl+D to delete
+- **Local-first** — history lives in two JSON files under userData; nothing is ever reported anywhere. The clipboard is the most sensitive place on your machine — it goes nowhere
 
+<a id="quick-start"></a>
 ## Quick start
 
 ```bash
@@ -45,60 +51,64 @@ npm install
 npm start
 ```
 
-按 `Alt+Shift+V` 唤起。复制任何东西试试——800ms 内它会出现在时间线里。
+Press `Alt+Shift+V` to summon. Copy anything — it lands in the timeline within 800 ms.
 
-开启语义检索（可选）：
+Optional semantic search:
 
 ```bash
 ollama pull nomic-embed-text
-# 重启 clipbrain，面板徽章从「词法」变「语义」
+# restart clipbrain; the panel badge flips from [lexical] to [semantic]
 ```
 
+<a id="how-it-works"></a>
 ## How it works
 
 ```text
-剪贴板 ──800ms 轮询──▶ 去重/提升 ──▶ 分类器（确定性七类）
-                                        │
-                                        ▼
-                      JSON 存储（userData，防抖原子落盘）
-                                        │
-全局快捷键 ──▶ 无边框面板 ──▶ 混合检索 ◀┘
-                              词法 0.30 + 余弦 0.70（可选 Ollama）
-                              └ 没有它？纯词法，一样能用
+clipboard ──800ms poll──▶ dedupe / promote ──▶ classifier (7 deterministic types)
+                                                │
+                                                ▼
+                       JSON store (userData, debounced atomic writes)
+                                                │
+global hotkey ──▶ frameless panel ──▶ hybrid search ◀┘
+                                 lexical 0.30 + cosine 0.70 (optional Ollama)
+                                 └ no Ollama? pure lexical — still fully usable
 ```
 
-设计立场：**embedding 是增强，不是依赖**。Ollama 不可用时捕获、检索、
-置顶、删除全部照常，只是徽章从「语义」变回「词法」。
+Design stance: **embeddings are an enhancement, not a dependency**. When Ollama is
+unavailable, capture, search, pin and delete all keep working — only the badge
+flips from [semantic] back to [lexical].
 
+<a id="honesty"></a>
 ## Honesty section
 
-- **v1 只捕获文本**。图片/文件剪贴板在路线图上。
-- **历史无加密**。存储在你本机 userData，进程级保护即操作系统用户边界；
-  如需磁盘加密请配合 BitLocker/FileVault。敏感窗口黑名单在路线图上。
-- **检索确定性**：同样的库、同样的查询，永远同一个排序——有测试锁着。
-- **无遥测、无网络上报**。唯一的网络调用是向本机 Ollama（如果你开了）。
+- **v1 captures text only.** Image/file clipboards are on the roadmap.
+- **History is not encrypted.** It lives in userData on your machine, and process-level protection equals the OS user boundary; for disk encryption pair it with BitLocker/FileVault. A sensitive-window blacklist is on the roadmap.
+- **Deterministic retrieval.** Same store, same query → same ranking — locked by tests.
+- **No telemetry, no network calls home.** The only network call is to local Ollama, if you enabled it.
 
+<a id="verification"></a>
 ## Verification
 
-每条承诺都有自动化验证（`node --test`，24 用例）：
+Every promise above has an automated check (`node --test`, 24 cases):
 
-| 承诺 | 验证 |
+| Promise | Verified by |
 |---|---|
-| 分类器确定性 | URL/颜色/命令/代码/JSON/OTP/文本各一组边界用例 |
-| 存储去重与提升 | 重复捕获不增条目、提升到顶部 |
-| 置顶豁免淘汰 | 容量硬上限下置顶优先保留 |
-| 损坏文件不崩溃 | 手写坏 JSON → 从空开始 |
-| 无关条目不混入检索 | 纯时间新鲜度不制造结果（测试抓出过这个真 bug） |
-| 语义近邻可被找回 | 零词法重叠的向量近邻排在弱词法命中之前 |
-| 检索确定性 | 同库同查询同排序 |
-| 全链路 | `npm run smoke:pipeline`：捕获→分类→落盘→重载→中文检索 |
-| 桌面壳 | `npm run smoke`：Electron 自检闭环，实测退出码 0 |
+| Classifier determinism | boundary cases per type: URL / color / command / code / JSON / OTP / text |
+| Store dedupe & promotion | duplicate capture adds no entry; promoted to top |
+| Pins survive eviction | hard capacity cap keeps pinned items first |
+| Corrupt file doesn't crash | hand-written bad JSON → restart from empty |
+| Unrelated entries stay out of results | pure recency never fabricates hits (a test caught this real bug) |
+| Semantic neighbors are findable | zero-lexical-overlap vector neighbors rank above weak lexical hits |
+| Retrieval determinism | same store, same query, same ranking |
+| Full pipeline | `npm run smoke:pipeline`: capture → classify → persist → reload → Chinese-text query |
+| Desktop shell | `npm run smoke`: Electron self-check loop, measured exit code 0 |
 
-CI：ubuntu / windows / macOS × Node 20 / 22。
+CI: ubuntu / windows / macOS × Node 20 / 22.
 
+<a id="configuration"></a>
 ## Configuration
 
-`userData/settings.json`（不存在则用默认值）：
+`userData/settings.json` (defaults apply when absent):
 
 ```json
 {
@@ -108,19 +118,21 @@ CI：ubuntu / windows / macOS × Node 20 / 22。
 }
 ```
 
+<a id="roadmap"></a>
 ## Roadmap
 
-- [ ] 图片/文件剪贴板（缩略图 + 视觉 embedding）
-- [ ] 敏感窗口黑名单（密码管理器中暂停捕获）
-- [ ] 置顶管理视图与标签
-- [ ] 打包发布（nsis/dmg/AppImage）
+- [ ] Image/file clipboard (thumbnail + visual embeddings)
+- [ ] Sensitive-window blacklist (pause capture inside password managers)
+- [ ] Pin management view & tags
+- [ ] Packaged releases (nsis/dmg/AppImage)
 
+<a id="principles"></a>
 ## Design principles
 
-1. **embedding 是增强不是依赖** — 没有 Ollama 一样是一台好用的剪贴板机器。
-2. **零原生模块** — clone、`npm install`、`npm start`，三行跑起来。
-3. **检索确定性** — 排序可测试、可复现、可信任。
-4. **数据不出机** — 剪贴板是机器上最敏感的地方。
+1. **Embeddings are an enhancement, not a dependency** — without Ollama it is still a great clipboard machine.
+2. **Zero native modules** — clone, `npm install`, `npm start`: three lines and it runs.
+3. **Deterministic retrieval** — ranking you can test, reproduce, and trust.
+4. **Data never leaves the machine** — the clipboard is the most sensitive place on it.
 
 ## License
 
